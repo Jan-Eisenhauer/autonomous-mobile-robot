@@ -1,0 +1,33 @@
+image: fbe-dockerreg.rwu.de/doz-iki/amr-vl
+
+before_script:
+  - sleep 5
+  - source /root/catkin_ws/devel/setup.bash
+
+stages:
+    - catkin make
+    - test
+
+catkin make:
+    stage: catkin make
+    script:
+    - roscd; cd ..; catkin_make
+
+
+start robot:
+    stage: test
+    script:
+      - cat ${CI_PROJECT_DIR}/final_project_practice/practice_goals.yaml
+      - cd /root/catkin_ws/src
+      - git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@fbe-gitlab.hs-weingarten.de/mat-iki/amr-goal-publisher.git
+      - cd /root/catkin_ws
+      - catkin_make
+      - source devel/setup.bash
+      - export TURTLEBOT3_MODEL=burger
+      - roslaunch turtlebot3_gazebo turtlebot3_house.launch&
+      - sleep 10
+      - roslaunch goal_publisher goal_publisher.launch config:="/root/catkin_ws/src/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/final_project_practice/practice_goals.yaml"&
+      - sleep 10
+      - rostopic list
+      - roslaunch jz_171702_prj start.launch
+      - rostopic list

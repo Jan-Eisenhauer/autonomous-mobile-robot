@@ -40,3 +40,20 @@ class RobotState:
         position = odom.pose.pose.position
         self.proximal_position = (position.x, position.y)
         self.proximal_rotation = _orientation2rotation(odom.pose.pose.orientation)
+
+    def received_all_data(self):
+        # types: () -> bool
+        """ Checks if all necessary data like position, odometry and laser scan were received.
+
+        Returns: Whether all necessary data were received.
+        """
+        if self.exact_position is None or self.exact_rotation is None:
+            return False
+
+        if self.proximal_position is None or self.proximal_rotation is None:
+            return False
+
+        if self.laser_scan is None:
+            return False
+
+        return True

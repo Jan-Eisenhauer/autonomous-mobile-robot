@@ -63,3 +63,4 @@ class RobotNavigation:
             return
 
         self._robot_control.navigate(target_position, self._robot_state)
+        self._marker_drawer.draw_direction(target_position, self._robot_state)

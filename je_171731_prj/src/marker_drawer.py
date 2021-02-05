@@ -26,6 +26,10 @@ PATH_NAMESPACE = "path"
 PATH_SCALE = Vector3(0.05, 0.15, 0.1)
 PATH_COLOR = ColorRGBA(1, 0, 0, 1)
 
+DIRECTION_NAMESPACE = "direction"
+DIRECTION_SCALE = Vector3(0.07, 0.2, 0.12)
+DIRECTION_COLOR = ColorRGBA(0.2, 0.6, 0.6, 1)
+
 
 def _global2local_point(position, global_position, rotation):
     relative_x = position[0] - global_position[0]
@@ -82,6 +86,11 @@ class MarkerDrawer:
             previous_position = position
 
         self._previous_path_size = len(path)
+
+    def draw_direction(self, direction, robot_state):
+        start = Point(0, 0, 0)
+        end = _global2local_point(direction, robot_state.exact_position, robot_state.exact_rotation)
+        self._draw_arrow(2, DIRECTION_NAMESPACE, DIRECTION_SCALE, start, end, DIRECTION_COLOR)
 
     def _draw_sphere_list(self, uid, namespace, scale, points, color=None, colors=None):
         marker = Marker()

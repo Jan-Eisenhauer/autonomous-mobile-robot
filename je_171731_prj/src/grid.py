@@ -49,3 +49,41 @@ class Grid:
             obstacle_hit_position = _polar2cartesian(laser_range, angle, position)
             obstacle_grid_position = position2grid(obstacle_hit_position)
             self.obstacles.add(obstacle_grid_position)
+
+    def first_in_sight(self, positions, start):
+        # type: ((float, float), (float, float)) -> (float, float)
+        """ Calculates the first position which is in sight to the start position.
+
+        Args:
+            positions: The positions to loop through.
+            start: The start position.
+        Returns: The first position which is in sight.
+        """
+        for position in positions:
+            if self._is_in_sight(start, position):
+                return position
+
+        return None
+
+    def _is_in_sight(self, start, end):
+        difference_x = end[0] - start[0]
+        difference_y = end[1] - start[1]
+        root_distance = abs(difference_x) + abs(difference_y)
+        if root_distance == 0:
+            return True
+
+        dx = (difference_x / root_distance) * GRID_SIZE * 0.5
+        dy = (difference_y / root_distance) * GRID_SIZE * 0.5
+
+        i = 0
+        max_i = math.ceil(root_distance / GRID_SIZE * 2)
+        while i <= max_i:
+            x = _coord2grid(start[0] + dx * i)
+            y = _coord2grid(start[1] + dy * i)
+            grid_position = position2grid((x, y))
+            if self.obstacles.__contains__(grid_position):
+                return False
+
+            i += 1
+
+        return True

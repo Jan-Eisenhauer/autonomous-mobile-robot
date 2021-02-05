@@ -3,6 +3,7 @@ from heapq import heappush, heappop
 from grid import GRID_SIZE
 from grid import position2grid
 
+MAX_ITERATIONS = 3000
 MAX_COST = 300
 
 
@@ -30,7 +31,9 @@ class PathFinder:
         start_heuristic = self._heuristic(start, end)
         f_score = {start: start_heuristic}
 
-        while len(open_list) > 0:
+        iterations = 0
+        while len(open_list) > 0 and iterations < MAX_ITERATIONS:
+            iterations += 1
             current = heappop(open_list)[1]
 
             # check if end reached

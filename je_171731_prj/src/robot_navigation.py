@@ -50,5 +50,7 @@ class RobotNavigation:
             self._robot_control.stop()
             return
 
+        self._marker_drawer.draw_path(path, self._robot_state)
+
         target_position = path[1]
         self._robot_control.navigate(target_position, self._robot_state)

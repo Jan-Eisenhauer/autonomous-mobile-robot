@@ -15,6 +15,14 @@ class GoalPool:
             if not self.goals.__contains__(goal):
                 self.goals.add(goal)
 
+    def get_total_collected_reward(self):
+        # type: () -> float
+        """ Calculates the sum of the collected goal rewards.
+
+        Returns: The total collected reward.
+        """
+        return sum(goal.reward for goal in list(self.goals) if goal.collected)
+
 
 class Goal:
     def __init__(self, x, y, reward):

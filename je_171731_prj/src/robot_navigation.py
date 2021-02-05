@@ -48,6 +48,7 @@ class RobotNavigation:
 
         # check if path was found
         if len(path) <= 1:
+            self._current_goal.unreachable = True
             self._robot_control.stop()
             return
 

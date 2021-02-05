@@ -27,4 +27,4 @@ class RobotNavigation:
             rospy.loginfo("Target: (%s %s), reward=%s" % (new_goal.x, new_goal.y, new_goal.reward))
         self._current_goal = new_goal
 
-        self._marker_drawer.draw_goals(self._goal_pool.goals, self._robot_state)
+        self._marker_drawer.draw_goals(self._current_goal, self._goal_pool.goals, self._robot_state)

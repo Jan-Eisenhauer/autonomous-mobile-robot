@@ -12,3 +12,5 @@ class RobotNavigation:
     def update(self):  # type: () -> None
         if not self._robot_state.received_all_data():
             return
+
+        self._goal_pool.check_goals(self._robot_state)

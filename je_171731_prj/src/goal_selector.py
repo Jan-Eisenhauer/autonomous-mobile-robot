@@ -1,4 +1,5 @@
-from goal import Goal
+from goal import Goal, GOAL_RADIUS_SQRT
+from grid import Grid
 from path_finder import PathFinder
 
 from robot_state import RobotState
@@ -19,8 +20,8 @@ class GoalSelector:
     def __init__(self):
         self._path_finder = PathFinder()
 
-    def select_goal(self, goals, obstacles, robot_state):
-        # type: (list, list, RobotState) -> Goal
+    def select_goal(self, goals, grid, robot_state):
+        # type: (list, Grid, RobotState) -> Goal
         min_distance_reward = None
         nearest_goal = None
         for goal in list(goals):
@@ -31,7 +32,11 @@ class GoalSelector:
                 if goal.distance_sqrt(robot_state.exact_position) > max_direct_distance:
                     continue
 
-            path = self._path_finder.find_path(obstacles, robot_state.proximal_position, (goal.x, goal.y))
+            goal_grid_position = grid.nearby_free_grid_position((goal.x, goal.y), GOAL_RADIUS_SQRT)
+            if goal_grid_position is None:
+                continue
+
+            path = self._path_finder.find_path(grid.obstacles, robot_state.proximal_position, goal_grid_position)
             distance_sqrt = _path_distance(path)
             if distance_sqrt is None:
                 continue

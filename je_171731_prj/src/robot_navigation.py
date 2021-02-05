@@ -1,4 +1,5 @@
 from goal import GoalPool
+from goal_selector import GoalSelector
 from marker_drawer import MarkerDrawer
 from robot_control import RobotControl
 from robot_state import RobotState
@@ -9,6 +10,7 @@ class RobotNavigation:
         self._robot_state = RobotState()
         self._robot_control = RobotControl()
         self._goal_pool = GoalPool()
+        self._goal_selector = GoalSelector()
         self._marker_drawer = MarkerDrawer()
 
     def update(self):  # type: () -> None

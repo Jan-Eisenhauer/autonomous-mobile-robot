@@ -22,6 +22,10 @@ OBSTACLE_NAMESPACE = "obstacles"
 OBSTACLE_SCALE = Vector3(GRID_SIZE, GRID_SIZE, GRID_SIZE)
 OBSTACLE_COLOR = ColorRGBA(1, 0.8, 0.2, 1)
 
+PATH_NAMESPACE = "path"
+PATH_SCALE = Vector3(0.05, 0.15, 0.1)
+PATH_COLOR = ColorRGBA(1, 0, 0, 1)
+
 
 def _global2local_point(position, global_position, rotation):
     relative_x = position[0] - global_position[0]
@@ -33,6 +37,7 @@ def _global2local_point(position, global_position, rotation):
 
 class MarkerDrawer:
     def __init__(self):
+        self._previous_path_size = 0
         self._visualization_publisher = rospy.Publisher(VISUALIZATION_MARKER_TOPIC, Marker, queue_size=4)
 
     def draw_goals(self, target_goal, goals, robot_state):
@@ -64,6 +69,20 @@ class MarkerDrawer:
 
         self._draw_sphere_list(0, OBSTACLE_NAMESPACE, OBSTACLE_SCALE, points, color=OBSTACLE_COLOR)
 
+    def draw_path(self, path, robot_state):
+        # type: (list, RobotState) -> None
+        for i in range(self._previous_path_size + 1):
+            self._clear_marker(i, PATH_NAMESPACE)
+
+        previous_position = path[0]
+        for index, position in enumerate(path[1::]):
+            start = _global2local_point(previous_position, robot_state.exact_position, robot_state.exact_rotation)
+            end = _global2local_point(position, robot_state.exact_position, robot_state.exact_rotation)
+            self._draw_arrow(index, PATH_NAMESPACE, PATH_SCALE, start, end, PATH_COLOR)
+            previous_position = position
+
+        self._previous_path_size = len(path)
+
     def _draw_sphere_list(self, uid, namespace, scale, points, color=None, colors=None):
         marker = Marker()
         # Header
@@ -82,5 +101,36 @@ class MarkerDrawer:
             marker.color = color
         if colors is not None:
             marker.colors = colors
+
+        self._visualization_publisher.publish(marker)
+
+    def _draw_arrow(self, uid, namespace, scale, start, end, color):
+        marker = Marker()
+        # Header
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = rospy.Time()
+
+        # Body
+        marker.ns = namespace
+        marker.id = uid
+        marker.type = Marker.ARROW
+        marker.action = Marker.ADD
+        marker.scale = scale
+        marker.pose.orientation = Quaternion(0, 0, 0, 1)
+        marker.points = [start, end]
+        marker.color = color
+
+        self._visualization_publisher.publish(marker)
+
+    def _clear_marker(self, uid, namespace):
+        marker = Marker()
+        # Header
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = rospy.Time()
+
+        # Body
+        marker.ns = namespace
+        marker.id = uid
+        marker.action = Marker.DELETE
 
         self._visualization_publisher.publish(marker)

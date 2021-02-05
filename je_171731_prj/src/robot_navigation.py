@@ -4,6 +4,7 @@ from goal import GoalPool
 from goal_selector import GoalSelector
 from grid import Grid
 from marker_drawer import MarkerDrawer
+from path_finder import PathFinder
 from robot_control import RobotControl
 from robot_state import RobotState
 
@@ -15,6 +16,7 @@ class RobotNavigation:
         self._goal_pool = GoalPool()
         self._grid = Grid()
         self._goal_selector = GoalSelector()
+        self._path_finder = PathFinder()
         self._marker_drawer = MarkerDrawer()
         self._current_goal = None
 
@@ -33,3 +35,22 @@ class RobotNavigation:
         self._current_goal = new_goal
 
         self._marker_drawer.draw_goals(self._current_goal, self._goal_pool.goals, self._robot_state)
+
+        # stop robot if no goal is selected
+        if self._current_goal is None:
+            self._robot_control.stop()
+            return
+
+        # find the path to the goal
+        path = self._path_finder.find_path(self._grid.obstacles, self._robot_state.proximal_position,
+                                           (self._current_goal.x, self._current_goal.y))
+
+        # check if path was found
+        if len(path) <= 1:
+            self._robot_control.stop()
+            return
+
+        self._marker_drawer.draw_path(path, self._robot_state)
+
+        target_position = path[1]
+        self._robot_control.navigate(target_position, self._robot_state)

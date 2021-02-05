@@ -7,6 +7,7 @@ from visualization_msgs.msg import Marker
 
 from goal import GOAL_RADIUS
 from goal import Goal
+from grid import GRID_SIZE
 from robot_state import RobotState
 
 VISUALIZATION_MARKER_TOPIC = "/visualization_marker"
@@ -16,6 +17,10 @@ GOAL_SCALE = Vector3(GOAL_RADIUS, GOAL_RADIUS, GOAL_RADIUS)
 TARGET_GOAL_COLOR = ColorRGBA(1, 0.75, 0, 1)
 COLLECTED_GOAL_COLOR = ColorRGBA(0, 1, 0, 1)
 UNCOLLECTED_GOAL_COLOR = ColorRGBA(0, 0, 1, 1)
+
+OBSTACLE_NAMESPACE = "obstacles"
+OBSTACLE_SCALE = Vector3(GRID_SIZE, GRID_SIZE, GRID_SIZE)
+OBSTACLE_COLOR = ColorRGBA(1, 0.8, 0.2, 1)
 
 
 def _global2local_point(position, global_position, rotation):
@@ -48,9 +53,18 @@ class MarkerDrawer:
 
             colors.append(color)
 
-        self._draw_sphere_list(0, GOAL_NAMESPACE, GOAL_SCALE, points, colors)
+        self._draw_sphere_list(0, GOAL_NAMESPACE, GOAL_SCALE, points, colors=colors)
 
-    def _draw_sphere_list(self, uid, namespace, scale, points, colors):
+    def draw_obstacles(self, obstacles, robot_state):
+        # type: (list, RobotState) -> None
+        points = []
+        for position in obstacles:
+            point = _global2local_point(position, robot_state.exact_position, robot_state.exact_rotation)
+            points.append(point)
+
+        self._draw_sphere_list(0, OBSTACLE_NAMESPACE, OBSTACLE_SCALE, points, color=OBSTACLE_COLOR)
+
+    def _draw_sphere_list(self, uid, namespace, scale, points, color=None, colors=None):
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"
@@ -64,6 +78,9 @@ class MarkerDrawer:
         marker.scale = scale
         marker.pose.orientation = Quaternion(0, 0, 0, 1)
         marker.points = points
-        marker.colors = colors
+        if color is not None:
+            marker.color = color
+        if colors is not None:
+            marker.colors = colors
 
         self._visualization_publisher.publish(marker)

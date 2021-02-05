@@ -2,6 +2,7 @@ import rospy
 
 from goal import GoalPool
 from goal_selector import GoalSelector
+from grid import Grid
 from marker_drawer import MarkerDrawer
 from robot_control import RobotControl
 from robot_state import RobotState
@@ -12,6 +13,7 @@ class RobotNavigation:
         self._robot_state = RobotState()
         self._robot_control = RobotControl()
         self._goal_pool = GoalPool()
+        self._grid = Grid()
         self._goal_selector = GoalSelector()
         self._marker_drawer = MarkerDrawer()
         self._current_goal = None
@@ -19,6 +21,9 @@ class RobotNavigation:
     def update(self):  # type: () -> None
         if not self._robot_state.received_all_data():
             return
+
+        self._grid.update(self._robot_state)
+        self._marker_drawer.draw_obstacles(self._grid.obstacles, self._robot_state)
 
         self._goal_pool.check_goals(self._robot_state)
 

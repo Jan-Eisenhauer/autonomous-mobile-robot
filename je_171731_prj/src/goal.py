@@ -4,7 +4,8 @@ from goal_publisher.msg import PointArray
 from robot_state import RobotState
 
 GOALS_TOPIC = "/goals"
-GOAL_RADIUS_SQRT = 0.5 * 0.5
+GOAL_RADIUS = 0.5
+GOAL_RADIUS_SQRT = GOAL_RADIUS * GOAL_RADIUS
 
 
 class GoalPool:

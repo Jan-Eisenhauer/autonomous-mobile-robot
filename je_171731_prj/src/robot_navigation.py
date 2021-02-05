@@ -52,5 +52,14 @@ class RobotNavigation:
 
         self._marker_drawer.draw_path(path, self._robot_state)
 
-        target_position = path[1]
+        # get furthest away target position which is still in sight
+        target_position = self._grid.first_in_sight(path[:0:-1], self._robot_state.proximal_position)
+        if target_position is None:
+            target_position = path[1]
+
+        # check if target position is in obstacle
+        if self._grid.obstacles.__contains__(target_position):
+            self._robot_control.stop()
+            return
+
         self._robot_control.navigate(target_position, self._robot_state)

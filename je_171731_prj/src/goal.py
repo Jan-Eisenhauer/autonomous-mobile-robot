@@ -40,6 +40,19 @@ class GoalPool:
                 print("Total reward: %s" % self.get_total_collected_reward())
                 continue
 
+    def get_uncollected_goals(self):
+        # type: () -> list
+        """ Extracts the uncollected goals from the goal pool
+
+        Returns: The list of the uncollected goals.
+        """
+        uncollected_goals = []
+        for goal in list(self.goals):
+            if not goal.collected:
+                uncollected_goals.append(goal)
+
+        return uncollected_goals
+
 
 class Goal:
     def __init__(self, x, y, reward):

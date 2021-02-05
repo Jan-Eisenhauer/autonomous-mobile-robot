@@ -6,12 +6,14 @@ from std_msgs.msg import ColorRGBA
 from visualization_msgs.msg import Marker
 
 from goal import GOAL_RADIUS
+from goal import Goal
 from robot_state import RobotState
 
 VISUALIZATION_MARKER_TOPIC = "/visualization_marker"
 
 GOAL_NAMESPACE = "goals"
 GOAL_SCALE = Vector3(GOAL_RADIUS, GOAL_RADIUS, GOAL_RADIUS)
+TARGET_GOAL_COLOR = ColorRGBA(1, 0.75, 0, 1)
 COLLECTED_GOAL_COLOR = ColorRGBA(0, 1, 0, 1)
 UNCOLLECTED_GOAL_COLOR = ColorRGBA(0, 0, 1, 1)
 
@@ -28,8 +30,8 @@ class MarkerDrawer:
     def __init__(self):
         self._visualization_publisher = rospy.Publisher(VISUALIZATION_MARKER_TOPIC, Marker, queue_size=4)
 
-    def draw_goals(self, goals, robot_state):
-        # type: (list, RobotState) -> None
+    def draw_goals(self, target_goal, goals, robot_state):
+        # type: (Goal, list, RobotState) -> None
         points = []
         colors = []
 
@@ -37,7 +39,9 @@ class MarkerDrawer:
             point = _global2local_point((goal.x, goal.y), robot_state.exact_position, robot_state.exact_rotation)
             points.append(point)
 
-            if goal.collected:
+            if goal == target_goal:
+                color = TARGET_GOAL_COLOR
+            elif goal.collected:
                 color = COLLECTED_GOAL_COLOR
             else:
                 color = UNCOLLECTED_GOAL_COLOR

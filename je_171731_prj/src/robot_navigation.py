@@ -1,6 +1,6 @@
 import rospy
 
-from goal import GoalPool
+from goal import GoalPool, GOAL_RADIUS_SQRT
 from goal_selector import GoalSelector
 from grid import Grid
 from marker_drawer import MarkerDrawer
@@ -29,7 +29,7 @@ class RobotNavigation:
 
         self._goal_pool.check_goals(self._robot_state)
 
-        new_goal = self._goal_selector.select_goal(self._goal_pool.get_uncollected_goals(), self._grid.obstacles,
+        new_goal = self._goal_selector.select_goal(self._goal_pool.get_uncollected_goals(), self._grid,
                                                    self._robot_state)
         if new_goal is not self._current_goal and new_goal is not None:
             rospy.loginfo("Target: (%s %s), reward=%s" % (new_goal.x, new_goal.y, new_goal.reward))
@@ -42,9 +42,17 @@ class RobotNavigation:
             self._robot_control.stop()
             return
 
+        goal_grid_position = self._grid.nearby_free_grid_position((self._current_goal.x, self._current_goal.y),
+                                                                  GOAL_RADIUS_SQRT)
+        # set goal as unreachable if no grid position found
+        if goal_grid_position is None:
+            self._current_goal.unreachable = True
+            self._robot_control.stop()
+            return
+
         # find the path to the goal
         path = self._path_finder.find_path(self._grid.obstacles, self._robot_state.proximal_position,
-                                           (self._current_goal.x, self._current_goal.y))
+                                           goal_grid_position)
 
         # check if path was found
         if len(path) <= 1:

@@ -51,4 +51,4 @@ class RobotNavigation:
             return
 
         target_position = path[1]
-        # TODO - navigate robot towards target_position
+        self._robot_control.navigate(target_position, self._robot_state)

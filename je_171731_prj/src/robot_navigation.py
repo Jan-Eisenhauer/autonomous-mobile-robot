@@ -23,6 +23,7 @@ class RobotNavigation:
             return
 
         self._grid.update(self._robot_state)
+        self._marker_drawer.draw_obstacles(self._grid.obstacles, self._robot_state)
 
         self._goal_pool.check_goals(self._robot_state)
 

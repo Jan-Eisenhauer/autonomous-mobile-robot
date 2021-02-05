@@ -29,7 +29,8 @@ class RobotNavigation:
 
         self._goal_pool.check_goals(self._robot_state)
 
-        new_goal = self._goal_selector.select_goal(self._goal_pool.get_uncollected_goals(), self._robot_state)
+        new_goal = self._goal_selector.select_goal(self._goal_pool.get_uncollected_goals(), self._grid.obstacles,
+                                                   self._robot_state)
         if new_goal is not self._current_goal and new_goal is not None:
             rospy.loginfo("Target: (%s %s), reward=%s" % (new_goal.x, new_goal.y, new_goal.reward))
         self._current_goal = new_goal

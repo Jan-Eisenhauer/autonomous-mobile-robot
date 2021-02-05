@@ -1,6 +1,9 @@
+from robot_control import RobotControl
+
+
 class RobotNavigation:
     def __init__(self):
-        pass
+        self._robot_control = RobotControl()
 
     def update(self):  # type: () -> None
         pass

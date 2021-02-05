@@ -48,7 +48,7 @@ class GoalPool:
         """
         uncollected_goals = []
         for goal in list(self.goals):
-            if not goal.collected:
+            if not goal.collected and not goal.unreachable:
                 uncollected_goals.append(goal)
 
         return uncollected_goals
@@ -60,6 +60,7 @@ class Goal:
         self.y = y
         self.reward = reward
         self.collected = False
+        self.unreachable = False
 
     def __eq__(self, other):
         if not isinstance(other, Goal):

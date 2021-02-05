@@ -1,4 +1,5 @@
 import math
+from Queue import Queue
 from math import cos, sin
 
 from robot_state import RobotState
@@ -49,6 +50,40 @@ class Grid:
             obstacle_hit_position = _polar2cartesian(laser_range, angle, position)
             obstacle_grid_position = position2grid(obstacle_hit_position)
             self.obstacles.add(obstacle_grid_position)
+
+    def nearby_free_grid_position(self, position, radius_sqrt):
+        grid_position = position2grid(position)
+        if not self.obstacles.__contains__(grid_position):
+            return grid_position
+
+        neighbor_queue = Queue()
+        neighbor_queue.put_nowait(position2grid(position))
+        while not neighbor_queue.empty():
+            current = neighbor_queue.get_nowait()
+            if not self.obstacles.__contains__(current):
+                return current
+
+            neighbors = self._expand_neighbors(current, position, radius_sqrt)
+            for neighbor in neighbors:
+                neighbor_queue.put_nowait(neighbor)
+
+        return None
+
+    def _expand_neighbors(self, grid_position, origin, radius_sqrt):
+        neighbors = []
+        for new_position in [(0, -GRID_SIZE), (0, GRID_SIZE), (-GRID_SIZE, 0), (GRID_SIZE, 0), (-GRID_SIZE, -GRID_SIZE),
+                             (-GRID_SIZE, GRID_SIZE), (GRID_SIZE, -GRID_SIZE), (GRID_SIZE, GRID_SIZE)]:
+            neighbor_position = (grid_position[0] + new_position[0], grid_position[1] + new_position[1])
+            if self.obstacles.__contains__(neighbor_position):
+                continue
+
+            distance2origin = ((neighbor_position[0] - origin[0]) ** 2) + ((neighbor_position[1] - origin[1]) ** 2)
+            if distance2origin > radius_sqrt:
+                continue
+
+            neighbors.append(neighbor_position)
+
+        return neighbors
 
     def first_in_sight(self, positions, start):
         # type: ((float, float), (float, float)) -> (float, float)

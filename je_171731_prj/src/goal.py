@@ -30,6 +30,12 @@ class GoalPool:
 
     def check_goals(self, robot_state):
         # type: (RobotState) -> None
+        """ Checks if any goal has been reached. If a goal has been reached, this prints the reached goal and the total
+        collected reward.
+
+        Args:
+            robot_state: The robot state.
+        """
         for goal in list(self.goals):
             if goal.collected:
                 continue

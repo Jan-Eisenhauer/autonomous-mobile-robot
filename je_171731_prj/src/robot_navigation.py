@@ -21,6 +21,7 @@ class RobotNavigation:
         self._current_goal = None
 
     def update(self):  # type: () -> None
+        """ Updates the navigation of the robot. """
         if not self._robot_state.received_all_data():
             return
 

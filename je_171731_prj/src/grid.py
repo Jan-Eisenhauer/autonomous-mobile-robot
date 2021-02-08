@@ -16,6 +16,12 @@ def _polar2cartesian(laser_range, angle, position):
 
 def position2grid(position):
     # type: ((float, float)) -> (float, float)
+    """ Translates any given position to the position of the grid.
+
+    Args:
+        position: The position to translate.
+    Returns: The translated grid position.
+    """
     x = _coord2grid(position[0])
     y = _coord2grid(position[1])
     return x, y
@@ -55,6 +61,14 @@ class Grid:
 
     def nearby_free_grid_position(self, position, radius_sqrt):
         # type: ((float, float), float) -> (float, float)
+        """ Finds a free grid position near the given position without an obstacle within the given radius.
+
+        Args:
+            position: The origin position to find the near free grid position.
+            radius_sqrt: The radius around the origin position to find the grid position.
+        Returns: The nearest free grid position without an obstacle within the radius.
+                 If there is no free grid position, None is returned.
+        """
         grid_position = position2grid(position)
         if not self.obstacles.__contains__(grid_position):
             return grid_position

@@ -23,6 +23,14 @@ class GoalSelector:
 
     def select_goal(self, goals, grid, robot_state):
         # type: (list, Grid, RobotState) -> Goal
+        """ Selects the next best goal to collect.
+
+        Args:
+            goals: The list of goals, which come into question to collect.
+            grid: The grid of the world.
+            robot_state: The robot state.
+        Returns: The selected goal.
+        """
         min_distance_reward = None
         nearest_goal = None
         for goal in list(goals):

@@ -6,6 +6,7 @@ from robot_navigation import RobotNavigation
 
 
 def main():  # type: () -> None
+    """ Main function for the robot navigation. """
     # initialize ros node
     rospy.init_node("robot_navigation")
     rospy.loginfo("Starting robot navigation.")

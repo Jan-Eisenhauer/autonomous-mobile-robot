@@ -217,6 +217,18 @@ If a goal is in range, set the collected state to true and print a message inclu
 10. Select the furthest away path position in sight, so no obstacle is on the way.
 11. Move the robot towards the selected path position.
 
+Obstacle detection by marking grid cells as obstacles:
+
+![](docs/images/Grid.png =140x200)
+
+Path finding using A* search algorithm:
+
+![](docs/images/Path.png =180x200)
+
+Path direction optimization:
+
+![](docs/images/PathOptimization.png =140x200)
+
 ## Authors
 
 * Jan Eisenhauer

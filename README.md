@@ -172,7 +172,7 @@ The navigation algorithm runs in an endless loop until a shutdown request is rec
     6. Store the grid position as an obstacle in a set.
 3. Check the goals if any is in range.
 If a goal is in range, set the collected state to true and print a message including the total collected reward.
-4. Select the best goal.
+4. Select the best goal by using the nearest neighbor algorithm which considers the path distance and the reward.
     1. Store the best goal and its distance reward in a variable.
     2. Loop through every uncollected, reachable goal.
     3. Check if the current goal is a candidate to beat the best goal.
@@ -194,7 +194,7 @@ If a goal is in range, set the collected state to true and print a message inclu
     6. Expand the neighbors of the current grid position which are within the radius to the origin.
     7. Add the neighbors to the queue which weren't in the queue yet.
 7. If no grid position could be found, set the goal as unreachable, stop the robot and continue the main loop.
-8. Find a path for the selected goal.
+8. Find a path for the selected goal using the A* algorithm.
     1. Convert the robot proximal position to the grid start position and set the end position to the selected goal grid position.
     1. Store an open list using a min heap which contains all open positions. Add the start position with weight 0 to the open list.
     2. Store the parents of a node.

@@ -151,18 +151,18 @@ class Grid:
         if root_distance == 0:
             return obstacles
 
-        dx = (difference_x / root_distance) * GRID_SIZE * 0.5
-        dy = (difference_y / root_distance) * GRID_SIZE * 0.5
+        dx = (difference_x / root_distance) * GRID_SIZE
+        dy = (difference_y / root_distance) * GRID_SIZE
 
         i = 0
-        max_i = math.ceil(root_distance / GRID_SIZE * 2)
+        max_i = math.ceil(root_distance / GRID_SIZE)
         while i <= max_i:
-            x = _coord2grid(start[0] + dx * i)
-            y = _coord2grid(start[1] + dy * i)
+            x = start[0] + dx * i
+            y = start[1] + dy * i
             grid_position = position2grid((x, y))
             if self.obstacles.__contains__(grid_position):
                 obstacles.add(grid_position)
 
-            i += 1
+            i += 0.1
 
         return obstacles

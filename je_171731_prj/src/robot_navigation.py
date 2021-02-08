@@ -10,7 +10,7 @@ from robot_state import RobotState
 
 
 class RobotNavigation:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._robot_state = RobotState()
         self._robot_control = RobotControl()
         self._goal_pool = GoalPool()
@@ -21,6 +21,7 @@ class RobotNavigation:
         self._current_goal = None
 
     def update(self):  # type: () -> None
+        """ Updates the navigation of the robot. """
         if not self._robot_state.received_all_data():
             return
 

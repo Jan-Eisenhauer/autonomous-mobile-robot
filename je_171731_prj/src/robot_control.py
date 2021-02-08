@@ -52,7 +52,7 @@ def _action2target(target_position, robot_state):
 
 
 class RobotControl:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._velocity_publisher = rospy.Publisher(VELOCITY_TOPIC, Twist, queue_size=4)
 
     def navigate(self, target_position, robot_state):

@@ -7,9 +7,9 @@ from robot_state import RobotState
 
 def _path_distance(path):
     # type: (list) -> float
-    if len(path) <= 1:
-        return None
     distance_sqrt = 0.0
+    if len(path) <= 1:
+        return 0.0
     previous_position = path[0]
     for position in path[1::]:
         distance_sqrt += (position[0] - previous_position[0]) ** 2 + (position[1] - previous_position[1]) ** 2
@@ -46,10 +46,10 @@ class GoalSelector:
                 continue
 
             path = self._path_finder.find_path(grid.obstacles, robot_state.proximal_position, goal_grid_position)
-            distance_sqrt = _path_distance(path)
-            if distance_sqrt is None:
+            if len(path) <= 1:
                 continue
 
+            distance_sqrt = _path_distance(path)
             distance_reward = distance_sqrt * (1.0 / goal.reward)
             if min_distance_reward is None or min_distance_reward > distance_reward:
                 min_distance_reward = distance_reward

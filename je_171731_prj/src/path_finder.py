@@ -57,7 +57,7 @@ class PathFinder:
         return []
 
     def _reconstruct_path(self, current, parents):
-        # type: ((float, float), list) -> list
+        # type: ((float, float), dict) -> list
         path = [current]
 
         while current in parents:

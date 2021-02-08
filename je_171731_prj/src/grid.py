@@ -74,7 +74,9 @@ class Grid:
             return grid_position
 
         neighbor_queue = Queue()
-        neighbor_queue.put_nowait(position2grid(position))
+        visited = set()
+        neighbor_queue.put_nowait(grid_position)
+        visited.add(grid_position)
         while not neighbor_queue.empty():
             current = neighbor_queue.get_nowait()
             if not self.obstacles.__contains__(current):
@@ -82,7 +84,8 @@ class Grid:
 
             neighbors = self._expand_neighbors(current, position, radius_sqrt)
             for neighbor in neighbors:
-                neighbor_queue.put_nowait(neighbor)
+                if not visited.__contains__(neighbor):
+                    neighbor_queue.put_nowait(neighbor)
 
         return None
 

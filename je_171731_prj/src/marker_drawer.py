@@ -32,6 +32,7 @@ DIRECTION_COLOR = ColorRGBA(0.2, 0.6, 0.6, 1)
 
 
 def _global2local_point(position, global_position, rotation):
+    # type: ((float, float), (float, float), float) -> Point
     relative_x = position[0] - global_position[0]
     relative_y = position[1] - global_position[1]
     transformed_x = cos(-rotation) * relative_x - sin(-rotation) * relative_y
@@ -40,12 +41,19 @@ def _global2local_point(position, global_position, rotation):
 
 
 class MarkerDrawer:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._previous_path_size = 0
         self._visualization_publisher = rospy.Publisher(VISUALIZATION_MARKER_TOPIC, Marker, queue_size=4)
 
     def draw_goals(self, target_goal, goals, robot_state):
         # type: (Goal, list, RobotState) -> None
+        """ Creates markers for all goals.
+
+        Args:
+            target_goal: The current targeted goal.
+            goals: The list of goals.
+            robot_state: The robot state.
+        """
         points = []
         colors = []
 
@@ -66,6 +74,12 @@ class MarkerDrawer:
 
     def draw_obstacles(self, obstacles, robot_state):
         # type: (list, RobotState) -> None
+        """ Creates markers for all obstacles.
+
+        Args:
+            obstacles: The list of obstacles.
+            robot_state: The robot state.
+        """
         points = []
         for position in obstacles:
             point = _global2local_point(position, robot_state.exact_position, robot_state.exact_rotation)
@@ -75,6 +89,12 @@ class MarkerDrawer:
 
     def draw_path(self, path, robot_state):
         # type: (list, RobotState) -> None
+        """ Draws the path with arrows. Previous drawn paths are removed.
+
+        Args:
+            path: The path to draw.
+            robot_state: The robot state.
+        """
         for i in range(self._previous_path_size + 1):
             self._clear_marker(i, PATH_NAMESPACE)
 
@@ -88,11 +108,19 @@ class MarkerDrawer:
         self._previous_path_size = len(path)
 
     def draw_direction(self, direction, robot_state):
+        # type: ((float, float), RobotState) -> None
+        """ Draws an arrow from the robot to the given direction.
+
+        Args:
+            direction: The direction to draw the arrow to.
+            robot_state: The robot state.
+        """
         start = Point(0, 0, 0)
         end = _global2local_point(direction, robot_state.exact_position, robot_state.exact_rotation)
         self._draw_arrow(2, DIRECTION_NAMESPACE, DIRECTION_SCALE, start, end, DIRECTION_COLOR)
 
     def _draw_sphere_list(self, uid, namespace, scale, points, color=None, colors=None):
+        # type: (int, str, Vector3, list, ColorRGBA, list) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"
@@ -114,6 +142,7 @@ class MarkerDrawer:
         self._visualization_publisher.publish(marker)
 
     def _draw_arrow(self, uid, namespace, scale, start, end, color):
+        # type: (int, str, Vector3, Point, Point, ColorRGBA) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"
@@ -132,6 +161,7 @@ class MarkerDrawer:
         self._visualization_publisher.publish(marker)
 
     def _clear_marker(self, uid, namespace):
+        # type: (int, str) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"

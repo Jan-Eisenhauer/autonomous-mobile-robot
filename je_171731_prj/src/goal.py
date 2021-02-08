@@ -9,11 +9,12 @@ GOAL_RADIUS_SQRT = GOAL_RADIUS * GOAL_RADIUS
 
 
 class GoalPool:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self.goals = set()
         rospy.Subscriber(GOALS_TOPIC, PointArray, self._goals_callback)
 
     def _goals_callback(self, point_array):
+        # type: (PointArray) -> None
         for published_goal in point_array.goals:
             goal = Goal(published_goal.x, published_goal.y, published_goal.reward)
             if not self.goals.__contains__(goal):
@@ -29,6 +30,12 @@ class GoalPool:
 
     def check_goals(self, robot_state):
         # type: (RobotState) -> None
+        """ Checks if any goal has been reached. If a goal has been reached, this prints the reached goal and the total
+        collected reward.
+
+        Args:
+            robot_state: The robot state.
+        """
         for goal in list(self.goals):
             if goal.collected:
                 continue
@@ -56,6 +63,7 @@ class GoalPool:
 
 class Goal:
     def __init__(self, x, y, reward):
+        # type: (float, float, float) -> None
         self.x = x
         self.y = y
         self.reward = reward
@@ -63,12 +71,14 @@ class Goal:
         self.unreachable = False
 
     def __eq__(self, other):
+        # type: (Goal) -> bool
         if not isinstance(other, Goal):
             return False
 
         return self.x == other.x and self.y == other.y and self.reward == other.reward
 
     def __hash__(self):
+        # type: () -> int
         return hash((self.x, self.y, self.reward))
 
     def distance_sqrt(self, position):

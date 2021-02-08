@@ -6,6 +6,7 @@ from robot_control import RobotControl, Movement, Steering
 
 
 def main():  # type: () -> None
+    """ Main function for the manual robot control. """
     rospy.init_node("manual_robot_control")
 
     robot_control = RobotControl()

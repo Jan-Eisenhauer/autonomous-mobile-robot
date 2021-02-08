@@ -21,6 +21,7 @@ class PathFinder:
         return self._a_star(obstacles, position2grid(start), position2grid(end))
 
     def _a_star(self, obstacles, start, end):
+        # type: (list, (float, float), (float, float)) -> list
         # open list is a min heap
         open_list = []
         heappush(open_list, (0, start))
@@ -56,6 +57,7 @@ class PathFinder:
         return []
 
     def _reconstruct_path(self, current, parents):
+        # type: ((float, float), list) -> list
         path = [current]
 
         while current in parents:
@@ -65,9 +67,11 @@ class PathFinder:
         return path[::-1]
 
     def _heuristic(self, point, end):
+        # type: ((float, float), (float, float)) -> float
         return ((point[0] - end[0]) ** 2) + ((point[1] - end[1]) ** 2)
 
     def _expand_children(self, current, obstacles):
+        # type: ((float, float), list) -> (list, list)
         children = []
         g_score_increments = []
 

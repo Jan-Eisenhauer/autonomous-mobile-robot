@@ -1,5 +1,6 @@
 import rospy
 from gazebo_msgs.msg import ModelStates
+from geometry_msgs.msg import Quaternion
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from tf.transformations import euler_from_quaternion
@@ -11,13 +12,14 @@ ROBOT_MODEL_NAME = "turtlebot3_burger"
 
 
 def _orientation2rotation(orientation):
+    # type: (Quaternion) -> float
     quaternion = (orientation.x, orientation.y, orientation.z, orientation.w)
     euler = euler_from_quaternion(quaternion)
     return euler[2]
 
 
 class RobotState:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self.laser_scan = None
         self.exact_position = None
         self.exact_rotation = None
@@ -28,21 +30,24 @@ class RobotState:
         rospy.Subscriber(ODOM_TOPIC, Odometry, self._odom_callback)
 
     def _laser_scan_callback(self, laser_scan):
+        # type: (LaserScan) -> None
         self.laser_scan = laser_scan
 
     def _model_states_callback(self, model_states):
+        # type: (ModelStates) -> None
         index = model_states.name.index(ROBOT_MODEL_NAME)
         position = model_states.pose[index].position
         self.exact_position = (position.x, position.y)
         self.exact_rotation = _orientation2rotation(model_states.pose[index].orientation)
 
     def _odom_callback(self, odom):
+        # type: (Odometry) -> None
         position = odom.pose.pose.position
         self.proximal_position = (position.x, position.y)
         self.proximal_rotation = _orientation2rotation(odom.pose.pose.orientation)
 
     def received_all_data(self):
-        # types: () -> bool
+        # type: () -> bool
         """ Checks if all necessary data like position, odometry and laser scan were received.
 
         Returns: Whether all necessary data were received.

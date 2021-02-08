@@ -219,15 +219,15 @@ If a goal is in range, set the collected state to true and print a message inclu
 
 Obstacle detection by marking grid cells as obstacles:
 
-![](docs/images/Grid.png =140x200)
+![](docs/images/Grid.png)
 
 Path finding using A* search algorithm:
 
-![](docs/images/Path.png =180x200)
+![](docs/images/Path.png)
 
 Path direction optimization:
 
-![](docs/images/PathOptimization.png =140x200)
+![](docs/images/PathOptimization.png)
 
 ## Authors
 

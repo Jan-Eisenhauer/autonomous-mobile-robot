@@ -10,7 +10,7 @@ from robot_state import RobotState
 
 
 class RobotNavigation:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._robot_state = RobotState()
         self._robot_control = RobotControl()
         self._goal_pool = GoalPool()

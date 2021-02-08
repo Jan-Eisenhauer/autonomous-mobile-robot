@@ -6,6 +6,7 @@ from robot_state import RobotState
 
 
 def _path_distance(path):
+    # type: (list) -> float
     if len(path) <= 1:
         return None
     distance_sqrt = 0.0
@@ -17,7 +18,7 @@ def _path_distance(path):
 
 
 class GoalSelector:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._path_finder = PathFinder()
 
     def select_goal(self, goals, grid, robot_state):

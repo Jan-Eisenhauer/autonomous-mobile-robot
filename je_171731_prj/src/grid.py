@@ -8,6 +8,7 @@ GRID_SIZE = 0.25
 
 
 def _polar2cartesian(laser_range, angle, position):
+    # type: (float, float, (float, float)) -> (float, float)
     x = laser_range * cos(angle) + position[0]
     y = laser_range * sin(angle) + position[1]
     return x, y
@@ -21,13 +22,14 @@ def position2grid(position):
 
 
 def _coord2grid(coord):
+    # type: (float) -> float
     translated_coord = math.floor(coord / GRID_SIZE)
     grid_coord = translated_coord * GRID_SIZE + GRID_SIZE * 0.5
     return grid_coord
 
 
 class Grid:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self.obstacles = set()
 
     def update(self, robot_state):
@@ -52,6 +54,7 @@ class Grid:
             self.obstacles.add(obstacle_grid_position)
 
     def nearby_free_grid_position(self, position, radius_sqrt):
+        # type: ((float, float), float) -> (float, float)
         grid_position = position2grid(position)
         if not self.obstacles.__contains__(grid_position):
             return grid_position
@@ -70,6 +73,7 @@ class Grid:
         return None
 
     def _expand_neighbors(self, grid_position, origin, radius_sqrt):
+        # type: ((float, float), (float, float), float) -> list
         neighbors = []
         for new_position in [(0, -GRID_SIZE), (0, GRID_SIZE), (-GRID_SIZE, 0), (GRID_SIZE, 0), (-GRID_SIZE, -GRID_SIZE),
                              (-GRID_SIZE, GRID_SIZE), (GRID_SIZE, -GRID_SIZE), (GRID_SIZE, GRID_SIZE)]:
@@ -101,6 +105,7 @@ class Grid:
         return None
 
     def _is_in_sight(self, start, end):
+        # type: ((float, float), (float, float)) -> bool
         difference_x = end[0] - start[0]
         difference_y = end[1] - start[1]
         root_distance = abs(difference_x) + abs(difference_y)

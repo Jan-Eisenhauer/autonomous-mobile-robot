@@ -32,6 +32,7 @@ DIRECTION_COLOR = ColorRGBA(0.2, 0.6, 0.6, 1)
 
 
 def _global2local_point(position, global_position, rotation):
+    # type: ((float, float), (float, float), float) -> Point
     relative_x = position[0] - global_position[0]
     relative_y = position[1] - global_position[1]
     transformed_x = cos(-rotation) * relative_x - sin(-rotation) * relative_y
@@ -40,7 +41,7 @@ def _global2local_point(position, global_position, rotation):
 
 
 class MarkerDrawer:
-    def __init__(self):
+    def __init__(self):  # type: () -> None
         self._previous_path_size = 0
         self._visualization_publisher = rospy.Publisher(VISUALIZATION_MARKER_TOPIC, Marker, queue_size=4)
 
@@ -88,11 +89,13 @@ class MarkerDrawer:
         self._previous_path_size = len(path)
 
     def draw_direction(self, direction, robot_state):
+        # type: ((float, float), RobotState) -> None
         start = Point(0, 0, 0)
         end = _global2local_point(direction, robot_state.exact_position, robot_state.exact_rotation)
         self._draw_arrow(2, DIRECTION_NAMESPACE, DIRECTION_SCALE, start, end, DIRECTION_COLOR)
 
     def _draw_sphere_list(self, uid, namespace, scale, points, color=None, colors=None):
+        # type: (int, str, Vector3, list, ColorRGBA, list) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"
@@ -114,6 +117,7 @@ class MarkerDrawer:
         self._visualization_publisher.publish(marker)
 
     def _draw_arrow(self, uid, namespace, scale, start, end, color):
+        # type: (int, str, Vector3, Point, Point, ColorRGBA) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"
@@ -132,6 +136,7 @@ class MarkerDrawer:
         self._visualization_publisher.publish(marker)
 
     def _clear_marker(self, uid, namespace):
+        # type: (int, str) -> None
         marker = Marker()
         # Header
         marker.header.frame_id = "base_link"

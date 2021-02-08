@@ -49,15 +49,30 @@ class Grid:
         rotation = robot_state.proximal_rotation
         laser_scan = robot_state.laser_scan
 
-        for i, laser_range in enumerate(laser_scan.ranges):
-            if math.isinf(laser_range):
-                continue
+        obstacles_to_keep = set()
+        obstacles_to_remove = set()
 
+        for i, laser_range in enumerate(laser_scan.ranges):
             angle = laser_scan.angle_min + (i * laser_scan.angle_increment) + rotation
+
+            if math.isinf(laser_range):
+                max_range_hit = _polar2cartesian(laser_scan.range_max - GRID_SIZE * 1.5, angle, position)
+                obstacles_to_remove.update(self._obstacles_on_line(position, max_range_hit))
+                continue
 
             obstacle_hit_position = _polar2cartesian(laser_range, angle, position)
             obstacle_grid_position = position2grid(obstacle_hit_position)
             self.obstacles.add(obstacle_grid_position)
+
+            obstacles_to_keep.add(obstacle_grid_position)
+
+            range_hit = _polar2cartesian(laser_range - GRID_SIZE * 1.5, angle, position)
+            max_range_hit = _polar2cartesian(laser_scan.range_max - GRID_SIZE * 1.5, angle, position)
+            obstacles_to_remove.update(self._obstacles_on_line(position, range_hit))
+            obstacles_to_keep.update(self._obstacles_on_line(range_hit, max_range_hit))
+
+        obstacles_to_remove.difference_update(obstacles_to_keep)
+        self.obstacles.difference_update(obstacles_to_remove)
 
     def nearby_free_grid_position(self, position, radius_sqrt):
         # type: ((float, float), float) -> (float, float)
@@ -123,24 +138,31 @@ class Grid:
 
     def _is_in_sight(self, start, end):
         # type: ((float, float), (float, float)) -> bool
+        obstacles_in_sight = self._obstacles_on_line(start, end)
+        return len(obstacles_in_sight) == 0
+
+    def _obstacles_on_line(self, start, end):
+        # type: ((float, float), (float, float)) -> set
+        obstacles = set()
+
         difference_x = end[0] - start[0]
         difference_y = end[1] - start[1]
         root_distance = abs(difference_x) + abs(difference_y)
         if root_distance == 0:
-            return True
+            return obstacles
 
-        dx = (difference_x / root_distance) * GRID_SIZE * 0.5
-        dy = (difference_y / root_distance) * GRID_SIZE * 0.5
+        dx = (difference_x / root_distance) * GRID_SIZE
+        dy = (difference_y / root_distance) * GRID_SIZE
 
         i = 0
-        max_i = math.ceil(root_distance / GRID_SIZE * 2)
+        max_i = math.ceil(root_distance / GRID_SIZE)
         while i <= max_i:
-            x = _coord2grid(start[0] + dx * i)
-            y = _coord2grid(start[1] + dy * i)
+            x = start[0] + dx * i
+            y = start[1] + dy * i
             grid_position = position2grid((x, y))
             if self.obstacles.__contains__(grid_position):
-                return False
+                obstacles.add(grid_position)
 
-            i += 1
+            i += 0.1
 
-        return True
+        return obstacles
